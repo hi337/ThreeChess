@@ -2,6 +2,9 @@ import * as THREE from "three";
 import WebGL from "three/addons/capabilities/WebGL.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import * as CANNON from "cannon";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+const loader = new GLTFLoader();
 
 //Chess Peice class
 class Box extends THREE.Mesh {
@@ -34,6 +37,13 @@ class Box extends THREE.Mesh {
     } else {
       this.position.y += this.velocity.y;
     }
+  }
+}
+
+class Light extends THREE.DirectionalLight {
+  constructor({ color = 0xffffff, intensity = 1, castShadow = false }) {
+    super(color, intensity);
+    this.castShadow = castShadow;
   }
 }
 
@@ -89,12 +99,16 @@ scene.add(plane);
 camera.rotation.y = 1;
 camera.position.set(5, 1, 1);
 
-//adding a light
-const light_color = 0xffffff;
-const light = new THREE.DirectionalLight(light_color, 1);
-light.position.set(0, 2, 0);
-light.castShadow = true;
-scene.add(light);
+//adding lights
+const light = new Light({ castShadow: true });
+const second_light = new Light({ intensity: 0.5 });
+const third_light = new Light({ intensity: 0.5 });
+const fourth_light = new Light({ intensity: 0.5 });
+light.position.set(1, 2, 0);
+second_light.position.set(-3, 2, 0);
+third_light.position.set(0, 2, 3);
+fourth_light.position.set(0, 2, -3);
+scene.add(light, second_light, third_light, fourth_light);
 
 function animate() {
   requestAnimationFrame(animate);
