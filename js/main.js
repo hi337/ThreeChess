@@ -2,7 +2,7 @@ import * as THREE from "three";
 import WebGL from "three/addons/capabilities/WebGL.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-//Zelensky class
+//Chess Peice class
 class Box extends THREE.Mesh {
   constructor({
     width,
