@@ -6,15 +6,46 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const loader = new GLTFLoader();
 
-let pawn;
+let piece_model_array = {
+  white_pawn: { url: "./models/pawn/scene.gltf", black: false },
+  black_pawn: { url: "./models/pawn/scene.gltf", black: true },
+  white_rook: { url: "./models/rook/scene.gltf", black: false },
+  black_rook: { url: "./models/rook/scene.gltf", black: true },
+};
+
+let white_pawn,
+  black_pawn,
+  white_rook,
+  black_rook,
+  white_knight,
+  black_knight,
+  white_bishop,
+  black_bishop,
+  white_queen,
+  black_queen,
+  white_king,
+  black_king;
+
+// let pieces_map = {
+//   white_pieces: {
+//     pawn1: white_pawn,
+
+//   },
+//   black_pieces: {}
+//     };
 
 //loading pawn
 loader.load(
   "./models/pawn/scene.gltf",
   //called when resource loaded
   (gltf) => {
-    pawn = gltf;
+    white_pawn = gltf;
     gltf.scene.position.set(5, 0, 4);
+    gltf.scene.traverse((node) => {
+      if (node.isMesh) {
+        node.material = new THREE.MeshLambertMaterial({ color: "grey" });
+      }
+    });
     scene.add(gltf.scene);
   },
   // called while loading is progressing
@@ -82,25 +113,25 @@ document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
-const cube = new Box({
-  width: 1,
-  height: 1,
-  depth: 1,
-  color: 0x00ff00,
-  velocity: {
-    x: 0,
-    y: -0.01,
-    z: 0,
-  },
-});
-cube.translateY(5);
-cube.castShadow = true;
-scene.add(cube);
+// const cube = new Box({
+//   width: 1,
+//   height: 1,
+//   depth: 1,
+//   color: 0x00ff00,
+//   velocity: {
+//     x: 0,
+//     y: -0.01,
+//     z: 0,
+//   },
+// });
+// cube.translateY(5);
+// cube.castShadow = true;
+// scene.add(cube);
 
 const plane = new Box({
-  width: 40,
+  width: 80,
   height: 0.1,
-  depth: 40,
+  depth: 80,
   color: 0xffffff,
   material: [
     new THREE.MeshLambertMaterial({ color: "lightgrey" }),
@@ -115,7 +146,7 @@ const plane = new Box({
 });
 
 //axes helper (development only)
-const axes = new THREE.AxesHelper(20);
+const axes = new THREE.AxesHelper(90);
 scene.add(axes);
 
 plane.position.set(0, 0, 0);
@@ -137,7 +168,6 @@ scene.add(light, second_light, third_light, fourth_light);
 
 function animate() {
   requestAnimationFrame(animate);
-  cube.update(plane);
 
   //maintain the aspect ratio for responsive design
   if (resizeRendererToDisplaySize(renderer)) {
