@@ -6,57 +6,236 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const loader = new GLTFLoader();
 
-let piece_model_array = {
-  white_pawn: { url: "./models/pawn/scene.gltf", black: false },
-  black_pawn: { url: "./models/pawn/scene.gltf", black: true },
-  white_rook: { url: "./models/rook/scene.gltf", black: false },
-  black_rook: { url: "./models/rook/scene.gltf", black: true },
-};
-
-let white_pawn,
-  black_pawn,
-  white_rook,
-  black_rook,
-  white_knight,
-  black_knight,
-  white_bishop,
-  black_bishop,
-  white_queen,
-  black_queen,
-  white_king,
-  black_king;
-
-// let pieces_map = {
-//   white_pieces: {
-//     pawn1: white_pawn,
-
-//   },
-//   black_pieces: {}
-//     };
-
-//loading pawn
-loader.load(
-  "./models/pawn/scene.gltf",
-  //called when resource loaded
-  (gltf) => {
-    white_pawn = gltf;
-    gltf.scene.position.set(5, 0, 4);
-    gltf.scene.traverse((node) => {
-      if (node.isMesh) {
-        node.material = new THREE.MeshLambertMaterial({ color: "grey" });
+class Piece {
+  constructor(
+    url,
+    team = "white",
+    position = { x: 0, y: 0, z: 0 },
+    rotation = { x: 0, y: 0, z: 0 }
+  ) {
+    this.position = position;
+    this.team = team;
+    this.rotation = rotation;
+    loader.load(
+      url, //called when resource loaded
+      (gltf) => {
+        gltf.scene.position.set(
+          this.position.x,
+          this.position.y,
+          this.position.z
+        );
+        gltf.scene.rotation.x = rotation.x;
+        gltf.scene.rotation.y = rotation.y;
+        gltf.scene.rotation.z = rotation.z;
+        gltf.scene.traverse((node) => {
+          if (node.isMesh) {
+            if (this.team == "white") {
+              node.material = new THREE.MeshLambertMaterial({ color: team });
+            } else {
+              node.material = new THREE.MeshLambertMaterial({
+                color: 0x1d1f1e,
+              });
+            }
+          }
+        });
+        gltf.scene.scale.set(3.5, 3.5, 3.5);
+        this.model = gltf;
+        scene.add(gltf.scene);
+      },
+      // called while loading is progressing
+      (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      },
+      // called when loading has errors
+      (error) => {
+        console.log("An error happened: " + error);
       }
-    });
-    scene.add(gltf.scene);
-  },
-  // called while loading is progressing
-  (xhr) => {
-    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-  },
-  // called when loading has errors
-  (error) => {
-    console.log("An error happened: " + error);
+    );
   }
-);
+}
+
+let piece_array = {
+  white_pawn_1: new Piece("./models/pawn/scene.gltf", "white", {
+    x: 70,
+    y: 0,
+    z: 50,
+  }),
+  white_pawn_2: new Piece("./models/pawn/scene.gltf", "white", {
+    x: 50,
+    y: 0,
+    z: 50,
+  }),
+  white_pawn_3: new Piece("./models/pawn/scene.gltf", "white", {
+    x: 30,
+    y: 0,
+    z: 50,
+  }),
+  white_pawn_4: new Piece("./models/pawn/scene.gltf", "white", {
+    x: 10,
+    y: 0,
+    z: 50,
+  }),
+  white_pawn_5: new Piece("./models/pawn/scene.gltf", "white", {
+    x: -10,
+    y: 0,
+    z: 50,
+  }),
+  white_pawn_6: new Piece("./models/pawn/scene.gltf", "white", {
+    x: -30,
+    y: 0,
+    z: 50,
+  }),
+  white_pawn_7: new Piece("./models/pawn/scene.gltf", "white", {
+    x: -50,
+    y: 0,
+    z: 50,
+  }),
+  white_pawn_8: new Piece("./models/pawn/scene.gltf", "white", {
+    x: -70,
+    y: 0,
+    z: 50,
+  }),
+  black_pawn_1: new Piece("./models/pawn/scene.gltf", "black", {
+    x: 70,
+    y: 0,
+    z: -50,
+  }),
+  black_pawn_2: new Piece("./models/pawn/scene.gltf", "black", {
+    x: 50,
+    y: 0,
+    z: -50,
+  }),
+  black_pawn_3: new Piece("./models/pawn/scene.gltf", "black", {
+    x: 30,
+    y: 0,
+    z: -50,
+  }),
+  black_pawn_4: new Piece("./models/pawn/scene.gltf", "black", {
+    x: 10,
+    y: 0,
+    z: -50,
+  }),
+  black_pawn_5: new Piece("./models/pawn/scene.gltf", "black", {
+    x: -10,
+    y: 0,
+    z: -50,
+  }),
+  black_pawn_6: new Piece("./models/pawn/scene.gltf", "black", {
+    x: -30,
+    y: 0,
+    z: -50,
+  }),
+  black_pawn_7: new Piece("./models/pawn/scene.gltf", "black", {
+    x: -50,
+    y: 0,
+    z: -50,
+  }),
+  black_pawn_8: new Piece("./models/pawn/scene.gltf", "black", {
+    x: -70,
+    y: 0,
+    z: -50,
+  }),
+  white_rook_1: new Piece("./models/rook/scene.gltf", "white", {
+    x: 70,
+    y: 0,
+    z: 70,
+  }),
+  white_rook_2: new Piece("./models/rook/scene.gltf", "white", {
+    x: -70,
+    y: 0,
+    z: 70,
+  }),
+  black_rook_1: new Piece("./models/rook/scene.gltf", "black", {
+    x: 70,
+    y: 0,
+    z: -70,
+  }),
+  black_rook_2: new Piece("./models/rook/scene.gltf", "black", {
+    x: -70,
+    y: 0,
+    z: -70,
+  }),
+  white_knight_1: new Piece(
+    "./models/knight/scene.gltf",
+    "white",
+    {
+      x: 50,
+      y: 0,
+      z: 70,
+    },
+    { x: 0, y: -Math.PI / 2, z: 0 }
+  ),
+  white_knight_2: new Piece(
+    "./models/knight/scene.gltf",
+    "white",
+    {
+      x: -50,
+      y: 0,
+      z: 70,
+    },
+    { x: 0, y: -Math.PI / 2, z: 0 }
+  ),
+  black_knight_1: new Piece(
+    "./models/knight/scene.gltf",
+    "black",
+    {
+      x: 50,
+      y: 0,
+      z: -70,
+    },
+    { x: 0, y: Math.PI / 2, z: 0 }
+  ),
+  black_knight_2: new Piece(
+    "./models/knight/scene.gltf",
+    "black",
+    {
+      x: -50,
+      y: 0,
+      z: -70,
+    },
+    { x: 0, y: Math.PI / 2, z: 0 }
+  ),
+  white_bishop_1: new Piece("./models/bishop/scene.gltf", "white", {
+    x: 30,
+    y: 0,
+    z: 70,
+  }),
+  white_bishop_2: new Piece("./models/bishop/scene.gltf", "white", {
+    x: -30,
+    y: 0,
+    z: 70,
+  }),
+  black_bishop_1: new Piece("./models/bishop/scene.gltf", "black", {
+    x: 30,
+    y: 0,
+    z: -70,
+  }),
+  black_bishop_2: new Piece("./models/bishop/scene.gltf", "black", {
+    x: -30,
+    y: 0,
+    z: -70,
+  }),
+  white_king: new Piece("./models/king/scene.gltf", "white", {
+    x: 10,
+    y: 0,
+    z: 70,
+  }),
+  white_queen: new Piece("./models/queen/scene.gltf", "white", {
+    x: -10,
+    y: 0,
+    z: 70,
+  }),
+  black_king: new Piece("./models/king/scene.gltf", "black", {
+    x: 10,
+    y: 0,
+    z: -70,
+  }),
+  black_queen: new Piece("./models/queen/scene.gltf", "black", {
+    x: -10,
+    y: 0,
+    z: -70,
+  }),
+};
 
 //Chess Peice class
 class Box extends THREE.Mesh {
@@ -106,32 +285,18 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ alpha: true });
+renderer.setClearColor(0x1d2e21, 1);
 renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
-// const cube = new Box({
-//   width: 1,
-//   height: 1,
-//   depth: 1,
-//   color: 0x00ff00,
-//   velocity: {
-//     x: 0,
-//     y: -0.01,
-//     z: 0,
-//   },
-// });
-// cube.translateY(5);
-// cube.castShadow = true;
-// scene.add(cube);
-
 const plane = new Box({
-  width: 80,
+  width: 160,
   height: 0.1,
-  depth: 80,
+  depth: 160,
   color: 0xffffff,
   material: [
     new THREE.MeshLambertMaterial({ color: "lightgrey" }),
@@ -152,8 +317,7 @@ scene.add(axes);
 plane.position.set(0, 0, 0);
 plane.receiveShadow = true;
 scene.add(plane);
-camera.rotation.y = 1;
-camera.position.set(5, 1, 1);
+camera.position.set(100, 1, 100);
 
 //adding lights
 const light = new Light({ castShadow: true });
