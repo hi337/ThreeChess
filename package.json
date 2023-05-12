@@ -5,10 +5,5 @@
   },
   "devDependencies": {
     "vite": "^4.3.4"
-  },
-  "scripts": {
-    "build": "vite build",
-    "preview": "vite preview",
-    "deploy": "gh-pages -d dist"
   }
 }
