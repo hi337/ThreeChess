@@ -1,0 +1,11 @@
+Model Information:
+* title:	Low Poly King
+* source:	https://sketchfab.com/3d-models/low-poly-king-b50320bcb1dc4aa0be891c22e8d2afd3
+* author:	Chris (https://sketchfab.com/robie1)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Low Poly King" (https://sketchfab.com/3d-models/low-poly-king-b50320bcb1dc4aa0be891c22e8d2afd3) by Chris (https://sketchfab.com/robie1) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

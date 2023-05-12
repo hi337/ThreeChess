@@ -1,0 +1,11 @@
+Model Information:
+* title:	Low Poly Rook
+* source:	https://sketchfab.com/3d-models/low-poly-rook-85c808e4192c46edb17e89a4cdc42392
+* author:	Chris (https://sketchfab.com/robie1)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Low Poly Rook" (https://sketchfab.com/3d-models/low-poly-rook-85c808e4192c46edb17e89a4cdc42392) by Chris (https://sketchfab.com/robie1) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

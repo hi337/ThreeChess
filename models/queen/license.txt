@@ -1,0 +1,11 @@
+Model Information:
+* title:	Queen - Low Poly
+* source:	https://sketchfab.com/3d-models/queen-low-poly-41e1d664650a4d50b37edc282d486f2b
+* author:	Chris (https://sketchfab.com/robie1)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Queen - Low Poly" (https://sketchfab.com/3d-models/queen-low-poly-41e1d664650a4d50b37edc282d486f2b) by Chris (https://sketchfab.com/robie1) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

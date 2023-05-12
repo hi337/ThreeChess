@@ -1,0 +1,11 @@
+Model Information:
+* title:	Knight - Low Poly
+* source:	https://sketchfab.com/3d-models/knight-low-poly-431d71b3c88f4461bf7848d474b8367f
+* author:	Chris (https://sketchfab.com/robie1)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Knight - Low Poly" (https://sketchfab.com/3d-models/knight-low-poly-431d71b3c88f4461bf7848d474b8367f) by Chris (https://sketchfab.com/robie1) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

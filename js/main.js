@@ -6,6 +6,27 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const loader = new GLTFLoader();
 
+let pawn;
+
+//loading pawn
+loader.load(
+  "./models/pawn/scene.gltf",
+  //called when resource loaded
+  (gltf) => {
+    pawn = gltf;
+    gltf.scene.position.set(5, 0, 4);
+    scene.add(gltf.scene);
+  },
+  // called while loading is progressing
+  (xhr) => {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  },
+  // called when loading has errors
+  (error) => {
+    console.log("An error happened: " + error);
+  }
+);
+
 //Chess Peice class
 class Box extends THREE.Mesh {
   constructor({
@@ -77,9 +98,9 @@ cube.castShadow = true;
 scene.add(cube);
 
 const plane = new Box({
-  width: 10,
-  height: 0.5,
-  depth: 10,
+  width: 40,
+  height: 0.1,
+  depth: 40,
   color: 0xffffff,
   material: [
     new THREE.MeshLambertMaterial({ color: "lightgrey" }),
@@ -92,6 +113,10 @@ const plane = new Box({
     new THREE.MeshLambertMaterial({ color: "lightgrey" }),
   ],
 });
+
+//axes helper (development only)
+const axes = new THREE.AxesHelper(20);
+scene.add(axes);
 
 plane.position.set(0, 0, 0);
 plane.receiveShadow = true;
