@@ -6,6 +6,26 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const loader = new GLTFLoader();
 
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+const renderer = new THREE.WebGLRenderer({ alpha: true });
+renderer.setClearColor(0x1d2e21, 1);
+renderer.shadowMap.enabled = true;
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+//returns the position of the pieces adjusted for Three's Origin
+function return_adjusted_position(position = { x: 0, y: 0, z: 0 }) {
+  position.x += 80;
+  position.z += 80;
+  return position;
+}
+
 class Piece {
   constructor(
     url,
@@ -277,19 +297,6 @@ class Light extends THREE.DirectionalLight {
     this.castShadow = castShadow;
   }
 }
-
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-const renderer = new THREE.WebGLRenderer({ alpha: true });
-renderer.setClearColor(0x1d2e21, 1);
-renderer.shadowMap.enabled = true;
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
