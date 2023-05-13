@@ -1,10 +1,12 @@
 import * as THREE from "three";
 import WebGL from "three/addons/capabilities/WebGL.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import * as CANNON from "cannon";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { InteractionManager } from "three.interactive";
 
 const loader = new GLTFLoader();
+
+let selected = "";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -13,11 +15,18 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
+camera.position.set(100, 1, 100);
 const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setClearColor(0x1d2e21, 1);
 renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+const interactionManager = new InteractionManager(
+  renderer,
+  camera,
+  renderer.domElement
+);
 
 //returns the position of the pieces adjusted for Three's Origin
 function return_adjusted_position(position = { x: 0, y: 0, z: 0 }) {
@@ -27,12 +36,14 @@ function return_adjusted_position(position = { x: 0, y: 0, z: 0 }) {
 }
 
 class Piece {
-  constructor(
-    url,
+  constructor({
+    url = "",
     team = "white",
     position = { x: 0, y: 0, z: 0 },
-    rotation = { x: 0, y: 0, z: 0 }
-  ) {
+    rotation = { x: 0, y: 0, z: 0 },
+    piece_name = "",
+  }) {
+    this.piece_name = piece_name;
     this.position = position;
     this.team = team;
     this.rotation = rotation;
@@ -58,6 +69,16 @@ class Piece {
             }
           }
         });
+        interactionManager.add(gltf.scene);
+        gltf.scene.addEventListener("mouseover", (e) => {
+          document.body.style.cursor = "pointer";
+        });
+        gltf.scene.addEventListener("mouseout", (e) => {
+          document.body.style.cursor = "default";
+        });
+        gltf.scene.addEventListener("click", (e) => {
+          selected = this.piece_name;
+        });
         gltf.scene.scale.set(3.5, 3.5, 3.5);
         this.model = gltf;
         scene.add(gltf.scene);
@@ -75,185 +96,329 @@ class Piece {
 }
 
 let piece_array = {
-  white_pawn_1: new Piece("./models/pawn/scene.gltf", "white", {
-    x: 70,
-    y: 0,
-    z: 50,
+  white_pawn_1: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "white",
+    position: {
+      x: 70,
+      y: 0,
+      z: 50,
+    },
+    piece_name: "white_pawn_1",
   }),
-  white_pawn_2: new Piece("./models/pawn/scene.gltf", "white", {
-    x: 50,
-    y: 0,
-    z: 50,
+  white_pawn_2: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "white",
+    position: {
+      x: 50,
+      y: 0,
+      z: 50,
+    },
+    piece_name: "white_pawn_2",
   }),
-  white_pawn_3: new Piece("./models/pawn/scene.gltf", "white", {
-    x: 30,
-    y: 0,
-    z: 50,
+  white_pawn_3: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "white",
+    position: {
+      x: 30,
+      y: 0,
+      z: 50,
+    },
+    piece_name: "white_pawn_3",
   }),
-  white_pawn_4: new Piece("./models/pawn/scene.gltf", "white", {
-    x: 10,
-    y: 0,
-    z: 50,
+  white_pawn_4: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "white",
+    position: {
+      x: 10,
+      y: 0,
+      z: 50,
+    },
+    piece_name: "white_pawn_4",
   }),
-  white_pawn_5: new Piece("./models/pawn/scene.gltf", "white", {
-    x: -10,
-    y: 0,
-    z: 50,
+  white_pawn_5: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "white",
+    position: {
+      x: -10,
+      y: 0,
+      z: 50,
+    },
+    piece_name: "white_pawn_5",
   }),
-  white_pawn_6: new Piece("./models/pawn/scene.gltf", "white", {
-    x: -30,
-    y: 0,
-    z: 50,
+  white_pawn_6: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "white",
+    position: {
+      x: -30,
+      y: 0,
+      z: 50,
+    },
+    piece_name: "white_pawn_6",
   }),
-  white_pawn_7: new Piece("./models/pawn/scene.gltf", "white", {
-    x: -50,
-    y: 0,
-    z: 50,
+  white_pawn_7: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "white",
+    position: {
+      x: -50,
+      y: 0,
+      z: 50,
+    },
+    piece_name: "white_pawn_7",
   }),
-  white_pawn_8: new Piece("./models/pawn/scene.gltf", "white", {
-    x: -70,
-    y: 0,
-    z: 50,
+  white_pawn_8: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "white",
+    position: {
+      x: -70,
+      y: 0,
+      z: 50,
+    },
+    piece_name: "white_pawn_8",
   }),
-  black_pawn_1: new Piece("./models/pawn/scene.gltf", "black", {
-    x: 70,
-    y: 0,
-    z: -50,
+  black_pawn_1: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "black",
+    position: {
+      x: 70,
+      y: 0,
+      z: -50,
+    },
+    piece_name: "black_pawn_1",
   }),
-  black_pawn_2: new Piece("./models/pawn/scene.gltf", "black", {
-    x: 50,
-    y: 0,
-    z: -50,
+  black_pawn_2: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "black",
+    position: {
+      x: 50,
+      y: 0,
+      z: -50,
+    },
+    piece_name: "black_pawn_2",
   }),
-  black_pawn_3: new Piece("./models/pawn/scene.gltf", "black", {
-    x: 30,
-    y: 0,
-    z: -50,
+  black_pawn_3: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "black",
+    position: {
+      x: 30,
+      y: 0,
+      z: -50,
+    },
+    piece_name: "black_pawn_3",
   }),
-  black_pawn_4: new Piece("./models/pawn/scene.gltf", "black", {
-    x: 10,
-    y: 0,
-    z: -50,
+  black_pawn_4: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "black",
+    position: {
+      x: 10,
+      y: 0,
+      z: -50,
+    },
+    piece_name: "black_pawn_4",
   }),
-  black_pawn_5: new Piece("./models/pawn/scene.gltf", "black", {
-    x: -10,
-    y: 0,
-    z: -50,
+  black_pawn_5: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "black",
+    position: {
+      x: -10,
+      y: 0,
+      z: -50,
+    },
+    piece_name: "black_pawn_5",
   }),
-  black_pawn_6: new Piece("./models/pawn/scene.gltf", "black", {
-    x: -30,
-    y: 0,
-    z: -50,
+  black_pawn_6: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "black",
+    position: {
+      x: -30,
+      y: 0,
+      z: -50,
+    },
+    piece_name: "black_pawn_6",
   }),
-  black_pawn_7: new Piece("./models/pawn/scene.gltf", "black", {
-    x: -50,
-    y: 0,
-    z: -50,
+  black_pawn_7: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "black",
+    position: {
+      x: -50,
+      y: 0,
+      z: -50,
+    },
+    piece_name: "black_pawn_7",
   }),
-  black_pawn_8: new Piece("./models/pawn/scene.gltf", "black", {
-    x: -70,
-    y: 0,
-    z: -50,
+  black_pawn_8: new Piece({
+    url: "./models/pawn/scene.gltf",
+    team: "black",
+    position: {
+      x: -70,
+      y: 0,
+      z: -50,
+    },
+    piece_name: "black_pawn_8",
   }),
-  white_rook_1: new Piece("./models/rook/scene.gltf", "white", {
-    x: 70,
-    y: 0,
-    z: 70,
+  white_rook_1: new Piece({
+    url: "./models/rook/scene.gltf",
+    team: "white",
+    position: {
+      x: 70,
+      y: 0,
+      z: 70,
+    },
+    piece_name: "white_rook_1",
   }),
-  white_rook_2: new Piece("./models/rook/scene.gltf", "white", {
-    x: -70,
-    y: 0,
-    z: 70,
+  white_rook_2: new Piece({
+    url: "./models/rook/scene.gltf",
+    team: "white",
+    position: {
+      x: -70,
+      y: 0,
+      z: 70,
+    },
+    piece_name: "white_rook_2",
   }),
-  black_rook_1: new Piece("./models/rook/scene.gltf", "black", {
-    x: 70,
-    y: 0,
-    z: -70,
+  black_rook_1: new Piece({
+    url: "./models/rook/scene.gltf",
+    team: "black",
+    position: {
+      x: 70,
+      y: 0,
+      z: -70,
+    },
+    piece_name: "black_rook_1",
   }),
-  black_rook_2: new Piece("./models/rook/scene.gltf", "black", {
-    x: -70,
-    y: 0,
-    z: -70,
+  black_rook_2: new Piece({
+    url: "./models/rook/scene.gltf",
+    team: "black",
+    position: {
+      x: -70,
+      y: 0,
+      z: -70,
+    },
+    piece_name: "black_rook_2",
   }),
-  white_knight_1: new Piece(
-    "./models/knight/scene.gltf",
-    "white",
-    {
+  white_knight_1: new Piece({
+    url: "./models/knight/scene.gltf",
+    team: "white",
+    position: {
       x: 50,
       y: 0,
       z: 70,
     },
-    { x: 0, y: -Math.PI / 2, z: 0 }
-  ),
-  white_knight_2: new Piece(
-    "./models/knight/scene.gltf",
-    "white",
-    {
+    rotation: { x: 0, y: -Math.PI / 2, z: 0 },
+    piece_name: "white_knight_1",
+  }),
+  white_knight_2: new Piece({
+    url: "./models/knight/scene.gltf",
+    team: "white",
+    position: {
       x: -50,
       y: 0,
       z: 70,
     },
-    { x: 0, y: -Math.PI / 2, z: 0 }
-  ),
-  black_knight_1: new Piece(
-    "./models/knight/scene.gltf",
-    "black",
-    {
+    rotation: { x: 0, y: -Math.PI / 2, z: 0 },
+    piece_name: "white_knight_2",
+  }),
+  black_knight_1: new Piece({
+    url: "./models/knight/scene.gltf",
+    team: "black",
+    position: {
       x: 50,
       y: 0,
       z: -70,
     },
-    { x: 0, y: Math.PI / 2, z: 0 }
-  ),
-  black_knight_2: new Piece(
-    "./models/knight/scene.gltf",
-    "black",
-    {
+    rotation: { x: 0, y: Math.PI / 2, z: 0 },
+    piece_name: "black_knight_1",
+  }),
+  black_knight_2: new Piece({
+    url: "./models/knight/scene.gltf",
+    team: "black",
+    position: {
       x: -50,
       y: 0,
       z: -70,
     },
-    { x: 0, y: Math.PI / 2, z: 0 }
-  ),
-  white_bishop_1: new Piece("./models/bishop/scene.gltf", "white", {
-    x: 30,
-    y: 0,
-    z: 70,
+    rotation: { x: 0, y: Math.PI / 2, z: 0 },
+    piece_name: "black_knight_2",
   }),
-  white_bishop_2: new Piece("./models/bishop/scene.gltf", "white", {
-    x: -30,
-    y: 0,
-    z: 70,
+  white_bishop_1: new Piece({
+    url: "./models/bishop/scene.gltf",
+    team: "white",
+    position: {
+      x: 30,
+      y: 0,
+      z: 70,
+    },
+    piece_name: "white_bishop_1",
   }),
-  black_bishop_1: new Piece("./models/bishop/scene.gltf", "black", {
-    x: 30,
-    y: 0,
-    z: -70,
+  white_bishop_2: new Piece({
+    url: "./models/bishop/scene.gltf",
+    team: "white",
+    position: {
+      x: -30,
+      y: 0,
+      z: 70,
+    },
+    piece_name: "white_bishop_2",
   }),
-  black_bishop_2: new Piece("./models/bishop/scene.gltf", "black", {
-    x: -30,
-    y: 0,
-    z: -70,
+  black_bishop_1: new Piece({
+    url: "./models/bishop/scene.gltf",
+    team: "black",
+    position: {
+      x: 30,
+      y: 0,
+      z: -70,
+    },
+    piece_name: "black_bishop_1",
   }),
-  white_king: new Piece("./models/king/scene.gltf", "white", {
-    x: 10,
-    y: 0,
-    z: 70,
+  black_bishop_2: new Piece({
+    url: "./models/bishop/scene.gltf",
+    team: "black",
+    position: {
+      x: -30,
+      y: 0,
+      z: -70,
+    },
+    piece_name: "black_bishop_2",
   }),
-  white_queen: new Piece("./models/queen/scene.gltf", "white", {
-    x: -10,
-    y: 0,
-    z: 70,
+  white_king: new Piece({
+    url: "./models/king/scene.gltf",
+    team: "white",
+    position: {
+      x: 10,
+      y: 0,
+      z: 70,
+    },
+    piece_name: "white_king",
   }),
-  black_king: new Piece("./models/king/scene.gltf", "black", {
-    x: 10,
-    y: 0,
-    z: -70,
+  white_queen: new Piece({
+    url: "./models/queen/scene.gltf",
+    team: "white",
+    position: {
+      x: -10,
+      y: 0,
+      z: 70,
+    },
+    piece_name: "white_queen",
   }),
-  black_queen: new Piece("./models/queen/scene.gltf", "black", {
-    x: -10,
-    y: 0,
-    z: -70,
+  black_king: new Piece({
+    url: "./models/king/scene.gltf",
+    team: "black",
+    position: {
+      x: 10,
+      y: 0,
+      z: -70,
+    },
+    piece_name: "black_king",
+  }),
+  black_queen: new Piece({
+    url: "./models/queen/scene.gltf",
+    team: "black",
+    position: {
+      x: -10,
+      y: 0,
+      z: -70,
+    },
+    piece_name: "black_queen",
   }),
 };
 
@@ -271,24 +436,11 @@ class Box extends THREE.Mesh {
     this.height = height;
     this.width = width;
     this.depth = depth;
-
     this.bottom = this.position.y - this.height / 2;
     this.top = this.position.y + this.height / 2;
     this.velocity = velocity;
   }
-  update(ground) {
-    this.bottom = this.position.y - this.height / 2;
-    this.top = this.position.y + this.height / 2;
-
-    this.velocity.y += -0.005;
-
-    if (this.bottom + this.velocity.y <= ground.top) {
-      this.velocity.y = -this.velocity.y;
-      this.velocity.y *= 0.8;
-    } else {
-      this.position.y += this.velocity.y;
-    }
-  }
+  update() {}
 }
 
 class Light extends THREE.DirectionalLight {
@@ -324,7 +476,6 @@ scene.add(axes);
 plane.position.set(0, 0, 0);
 plane.receiveShadow = true;
 scene.add(plane);
-camera.position.set(100, 1, 100);
 
 //adding lights
 const light = new Light({ castShadow: true });
@@ -339,6 +490,8 @@ scene.add(light, second_light, third_light, fourth_light);
 
 function animate() {
   requestAnimationFrame(animate);
+
+  interactionManager.update();
 
   //maintain the aspect ratio for responsive design
   if (resizeRendererToDisplaySize(renderer)) {
