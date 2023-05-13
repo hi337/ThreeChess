@@ -5,7 +5,9 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { InteractionManager } from "three.interactive";
 
 const loader = new GLTFLoader();
+const raycaster = new THREE.Raycaster();
 
+let mousedown = false;
 let selected = "";
 
 const scene = new THREE.Scene();
@@ -76,8 +78,19 @@ class Piece {
         gltf.scene.addEventListener("mouseout", (e) => {
           document.body.style.cursor = "default";
         });
-        gltf.scene.addEventListener("click", (e) => {
+        gltf.scene.addEventListener("mousedown", (e) => {
           selected = this.piece_name;
+          mousedown = true;
+          setTimeout(function () {
+            if (mousedown) {
+              // mouse was held down for > 1 seconds
+              mousedown = false;
+              selected = "";
+            }
+          }, 1000);
+        });
+        gltf.scene.addEventListener("mouseup", (e) => {
+          mousedown = false;
         });
         gltf.scene.scale.set(3.5, 3.5, 3.5);
         this.model = gltf;
@@ -92,6 +105,11 @@ class Piece {
         console.log("An error happened: " + error);
       }
     );
+  }
+  update() {
+    this.model.scene.position.x = this.position.x;
+    this.model.scene.position.y = this.position.y;
+    this.model.scene.position.z = this.position.z;
   }
 }
 
@@ -428,7 +446,7 @@ class Box extends THREE.Mesh {
     width,
     height,
     depth,
-    color = "0x00ff00",
+    color = 0x00ff00,
     velocity = { x: 0, y: 0, z: 0 },
     material = new THREE.MeshStandardMaterial({ color: color }),
   }) {
@@ -440,7 +458,6 @@ class Box extends THREE.Mesh {
     this.top = this.position.y + this.height / 2;
     this.velocity = velocity;
   }
-  update() {}
 }
 
 class Light extends THREE.DirectionalLight {
@@ -475,6 +492,34 @@ scene.add(axes);
 
 plane.position.set(0, 0, 0);
 plane.receiveShadow = true;
+
+const test_box = new Box({
+  width: 10,
+  height: 10,
+  depth: 10,
+});
+
+interactionManager.add(plane);
+plane.addEventListener("click", (e) => {
+  // update the picking ray with the camera and pointer position
+  raycaster.setFromCamera(e.coords, camera);
+
+  // calculate objects intersecting the picking ray
+  const intersects = raycaster.intersectObjects(scene.children);
+  for (let piece in piece_array) {
+    if (piece_array[piece].piece_name == selected) {
+      if (
+        Math.abs(piece_array[piece].position.x - intersects[0].point.x) > 10 ||
+        Math.abs(piece_array[piece].position.z - intersects[0].point.z) > 10
+      ) {
+        piece_array[piece].position.x = intersects[0].point.x;
+        piece_array[piece].position.z = intersects[0].point.z;
+      }
+
+      piece_array[piece].update();
+    }
+  }
+});
 scene.add(plane);
 
 //adding lights
