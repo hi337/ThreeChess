@@ -20,7 +20,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.set(110, 100, 110);
 const renderer = new THREE.WebGLRenderer({ alpha: true });
-renderer.setClearColor(0x1d2e21, 1);
+renderer.setClearColor(0x007a3d, 1);
 renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
