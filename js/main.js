@@ -9,6 +9,7 @@ const raycaster = new THREE.Raycaster();
 
 let mousedown = false;
 let selected = "";
+let turn = "white";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -17,7 +18,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(100, 1, 100);
+camera.position.set(110, 100, 110);
 const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setClearColor(0x1d2e21, 1);
 renderer.shadowMap.enabled = true;
@@ -29,13 +30,6 @@ const interactionManager = new InteractionManager(
   camera,
   renderer.domElement
 );
-
-//returns the position of the pieces adjusted for Three's Origin
-function return_adjusted_position(position = { x: 0, y: 0, z: 0 }) {
-  position.x += 80;
-  position.z += 80;
-  return position;
-}
 
 class Piece {
   constructor({
@@ -79,7 +73,9 @@ class Piece {
           document.body.style.cursor = "default";
         });
         gltf.scene.addEventListener("mousedown", (e) => {
-          selected = this.piece_name;
+          if (this.team == turn) {
+            selected = this.piece_name;
+          }
           mousedown = true;
           setTimeout(function () {
             if (mousedown) {
@@ -514,6 +510,8 @@ plane.addEventListener("click", (e) => {
       ) {
         piece_array[piece].position.x = intersects[0].point.x;
         piece_array[piece].position.z = intersects[0].point.z;
+        selected = "";
+        turn == "white" ? (turn = "black") : (turn = "white");
       }
 
       piece_array[piece].update();
