@@ -515,6 +515,21 @@ plane.addEventListener("click", (e) => {
       }
 
       piece_array[piece].update();
+      let firstBB = new THREE.Box3().setFromObject(
+        piece_array[piece].model.scene
+      );
+      for (let piece_index in piece_array) {
+        if (piece_array[piece_index].team != piece_array[piece].team) {
+          let secondBB = new THREE.Box3().setFromObject(
+            piece_array[piece_index].model.scene
+          );
+          if (firstBB.intersectsBox(secondBB)) {
+            scene.remove(piece_array[piece_index].model.scene);
+            interactionManager.remove(piece_array[piece_index].model.scene);
+            delete piece_array[piece_index];
+          }
+        }
+      }
     }
   }
 });
