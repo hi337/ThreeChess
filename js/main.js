@@ -5,25 +5,12 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { InteractionManager } from "three.interactive";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 
-const stlloader = new STLLoader();
-const gltfloder = new GLTFLoader();
-const raycaster = new THREE.Raycaster();
-let start_text_mesh;
+let started = false; //vaiable seeing if the game started or not;
+let mode = ""; //mode will be either "create", which will mean the screen will just show a code or "join", which will allow two players to join
 
-//loading the start text
-stlloader.load("./models/welcome.stl", (geo) => {
-  let material = new THREE.MeshLambertMaterial({ color: 0xce1126 });
-  start_text_mesh = new THREE.Mesh(geo, material);
-  start_text_mesh.scale.set(0.25, 0.25, 0.25);
-  start_text_mesh.position.set(-82, 0, 0);
-  start_text_mesh.rotateX(-Math.PI / 2);
-  scene.add(start_text_mesh);
-});
-
-let mousedown = false;
-let selected = "";
-let turn = "white";
-
+const stlloader = new STLLoader(); //loads stl files
+const gltfloder = new GLTFLoader(); //loads gltf files
+const raycaster = new THREE.Raycaster(); //raycaster used to detect where on the chess board the player clicked
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -38,11 +25,67 @@ renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+//variables defined as meshes to start game
+let start_text_mesh, create_text_mesh, join_text_mesh;
+
+//used to detect user interaction like clicking/taping in a manner similar to dom elements
 const interactionManager = new InteractionManager(
   renderer,
   camera,
   renderer.domElement
 );
+
+//loading the start text
+stlloader.load("./models/welcome.stl", (geo) => {
+  let material = new THREE.MeshLambertMaterial({ color: 0xce1126 });
+  start_text_mesh = new THREE.Mesh(geo, material);
+  start_text_mesh.scale.set(0.25, 0.25, 0.25);
+  start_text_mesh.position.set(-82, 0, 0);
+  start_text_mesh.rotateX(-Math.PI / 2);
+  scene.add(start_text_mesh);
+});
+
+//loading create room button
+stlloader.load("./models/create.stl", (geo) => {
+  let material = new THREE.MeshLambertMaterial({ color: 0xce1126 });
+  create_text_mesh = new THREE.Mesh(geo, material);
+  create_text_mesh.scale.set(0.17, 0.17, 0.17);
+  create_text_mesh.position.set(-60, 0, 20);
+  create_text_mesh.rotateX(-Math.PI / 2);
+  interactionManager.add(create_text_mesh);
+  create_text_mesh.addEventListener("mouseover", (e) => {
+    document.body.style.cursor = "pointer";
+    create_text_mesh.material.color.setHex(0xffffff);
+  });
+  create_text_mesh.addEventListener("mouseout", (e) => {
+    document.body.style.cursor = "default";
+    create_text_mesh.material.color.setHex(0xce1126);
+  });
+  scene.add(create_text_mesh);
+});
+
+//loading join room button
+stlloader.load("./models/join.stl", (geo) => {
+  let material = new THREE.MeshLambertMaterial({ color: 0xce1126 });
+  join_text_mesh = new THREE.Mesh(geo, material);
+  join_text_mesh.scale.set(0.17, 0.17, 0.17);
+  join_text_mesh.position.set(20, 0, 20);
+  join_text_mesh.rotateX(-Math.PI / 2);
+  interactionManager.add(join_text_mesh);
+  join_text_mesh.addEventListener("mouseover", (e) => {
+    document.body.style.cursor = "pointer";
+    join_text_mesh.material.color.setHex(0xffffff);
+  });
+  join_text_mesh.addEventListener("mouseout", (e) => {
+    document.body.style.cursor = "default";
+    join_text_mesh.material.color.setHex(0xce1126);
+  });
+  scene.add(join_text_mesh);
+});
+
+let mousedown = false;
+let selected = "";
+let turn = "white";
 
 class Piece {
   constructor({
@@ -86,17 +129,19 @@ class Piece {
           document.body.style.cursor = "default";
         });
         gltf.scene.addEventListener("mousedown", (e) => {
-          if (this.team == turn) {
-            selected = this.piece_name;
-          }
-          mousedown = true;
-          setTimeout(function () {
-            if (mousedown) {
-              // mouse was held down for > 1 seconds
-              mousedown = false;
-              selected = "";
+          if (started) {
+            if (this.team == turn) {
+              selected = this.piece_name;
             }
-          }, 1000);
+            mousedown = true;
+            setTimeout(function () {
+              if (mousedown) {
+                // mouse was held down for > 1 seconds
+                mousedown = false;
+                selected = "";
+              }
+            }, 1000);
+          }
         });
         gltf.scene.addEventListener("mouseup", (e) => {
           mousedown = false;
