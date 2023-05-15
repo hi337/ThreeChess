@@ -3,9 +3,22 @@ import WebGL from "three/addons/capabilities/WebGL.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { InteractionManager } from "three.interactive";
+import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 
-const loader = new GLTFLoader();
+const stlloader = new STLLoader();
+const gltfloder = new GLTFLoader();
 const raycaster = new THREE.Raycaster();
+let start_text_mesh;
+
+//loading the start text
+stlloader.load("./models/welcome.stl", (geo) => {
+  let material = new THREE.MeshLambertMaterial({ color: 0xce1126 });
+  start_text_mesh = new THREE.Mesh(geo, material);
+  start_text_mesh.scale.set(0.25, 0.25, 0.25);
+  start_text_mesh.position.set(-82, 0, 0);
+  start_text_mesh.rotateX(-Math.PI / 2);
+  scene.add(start_text_mesh);
+});
 
 let mousedown = false;
 let selected = "";
@@ -43,7 +56,7 @@ class Piece {
     this.position = position;
     this.team = team;
     this.rotation = rotation;
-    loader.load(
+    gltfloder.load(
       url, //called when resource loaded
       (gltf) => {
         gltf.scene.position.set(
