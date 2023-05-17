@@ -98,9 +98,9 @@ stlloader.load("./models/create.stl", (geo) => {
             interactionManager.remove(create_text_mesh);
             started = true;
             scene.add(room_id_mesh);
+            navigator.clipboard.writeText(room_id);
           }
         );
-        alert(room_id);
       })
       .catch((e) => {
         console.log("CREATE ERROR", e);
@@ -132,29 +132,39 @@ stlloader.load("./models/join.stl", (geo) => {
       .then((room) => {
         global_room = room;
         room.onStateChange((state) => {
-          if (state.number_connected == 2) {
-            player_team = "white";
-            scene.remove(start_text_mesh); //remove welcome speech
-            scene.remove(join_text_mesh); //remove join button
-            scene.remove(create_text_mesh); //remove create button
-            interactionManager.remove(join_text_mesh); //remove button from interaction manager
-            interactionManager.remove(create_text_mesh); //remove button from interaction manager
-          } else if (state.number_connected == 3) {
-            player_team = "black";
-            room.send("started", "started");
-            scene.remove(start_text_mesh); //remove welcome speech
-            scene.remove(join_text_mesh); //remove join button
-            scene.remove(create_text_mesh); //remove create button
-            interactionManager.remove(join_text_mesh); //remove button from interaction manager
-            interactionManager.remove(create_text_mesh); //remove button from interaction manager
-          }
           if (state.started == true) {
             started = true;
           }
           turn = state.turn;
-          for (let piece in piece_array) {
-            piece_array[piece].position.x = state.pieces_array[piece].x;
-            piece_array[piece].position.z = state.pieces_array[piece].z;
+          if (started) {
+            for (let i = 0; i < state.pieces_array.length; ++i) {
+              if (state.pieces_array[i].piece_name == state.recentMove) {
+                piece_array[state.recentMove].position.x =
+                  state.pieces_array[i].x;
+                piece_array[state.recentMove].position.z =
+                  state.pieces_array[i].z;
+                piece_array[state.recentMove].update();
+                collisionCheck();
+              }
+            }
+          }
+          if (!started) {
+            if (state.number_connected == 2) {
+              player_team = "white";
+              scene.remove(start_text_mesh); //remove welcome speech
+              scene.remove(join_text_mesh); //remove join button
+              scene.remove(create_text_mesh); //remove create button
+              interactionManager.remove(join_text_mesh); //remove button from interaction manager
+              interactionManager.remove(create_text_mesh); //remove button from interaction manager
+            } else if (state.number_connected == 3) {
+              player_team = "black";
+              room.send("started", "started");
+              scene.remove(start_text_mesh); //remove welcome speech
+              scene.remove(join_text_mesh); //remove join button
+              scene.remove(create_text_mesh); //remove create button
+              interactionManager.remove(join_text_mesh); //remove button from interaction manager
+              interactionManager.remove(create_text_mesh); //remove button from interaction manager
+            }
           }
         });
       })
@@ -633,6 +643,7 @@ const test_box = new Box({
 
 interactionManager.add(plane);
 plane.addEventListener("click", (e) => {
+  if (player_team != turn) return;
   // update the picking ray with the camera and pointer position
   raycaster.setFromCamera(e.coords, camera);
 
@@ -659,21 +670,6 @@ plane.addEventListener("click", (e) => {
       }
 
       piece_array[piece].update();
-      let firstBB = new THREE.Box3().setFromObject(
-        piece_array[piece].model.scene
-      );
-      for (let piece_index in piece_array) {
-        if (piece_array[piece_index].team != piece_array[piece].team) {
-          let secondBB = new THREE.Box3().setFromObject(
-            piece_array[piece_index].model.scene
-          );
-          if (firstBB.intersectsBox(secondBB)) {
-            scene.remove(piece_array[piece_index].model.scene);
-            interactionManager.remove(piece_array[piece_index].model.scene);
-            delete piece_array[piece_index];
-          }
-        }
-      }
     }
   }
 });
@@ -723,4 +719,32 @@ function resizeRendererToDisplaySize(renderer) {
     renderer.setSize(width, height, false);
   }
   return needResize;
+}
+
+function collisionCheck() {
+  for (let piece in piece_array) {
+    let firstBB = new THREE.Box3().setFromObject(
+      piece_array[piece].model.scene
+    );
+    for (let piece_index in piece_array) {
+      if (piece_array[piece_index].team != piece_array[piece].team) {
+        let secondBB = new THREE.Box3().setFromObject(
+          piece_array[piece_index].model.scene
+        );
+        if (firstBB.intersectsBox(secondBB)) {
+          if (turn == "black") {
+            scene.remove(piece_array[piece_index].model.scene);
+            interactionManager.remove(piece_array[piece_index].model.scene);
+            delete piece_array[piece_index];
+            global_room.send("collide", piece_index);
+          } else {
+            scene.remove(piece_array[piece].model.scene);
+            interactionManager.remove(piece_array[piece].model.scene);
+            delete piece_array[piece];
+            global_room.send("collide", piece);
+          }
+        }
+      }
+    }
+  }
 }
