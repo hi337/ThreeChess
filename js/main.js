@@ -11,6 +11,11 @@ import * as Colyseus from "colyseus.js";
 let colyseus_client = new Colyseus.Client("ws://localhost:2567");
 let started = false; //vaiable seeing if the game started or not;
 let room_id = "";
+let player_team = "";
+let mousedown = false;
+let selected = "";
+let turn = "white";
+let global_room;
 
 const stlloader = new STLLoader(); //loads stl files
 const gltfloder = new GLTFLoader(); //loads gltf files
@@ -125,8 +130,32 @@ stlloader.load("./models/join.stl", (geo) => {
     colyseus_client
       .joinById(room_id)
       .then((room) => {
+        global_room = room;
         room.onStateChange((state) => {
-          console.log(state.number_connected);
+          if (state.number_connected == 2) {
+            player_team = "white";
+            scene.remove(start_text_mesh); //remove welcome speech
+            scene.remove(join_text_mesh); //remove join button
+            scene.remove(create_text_mesh); //remove create button
+            interactionManager.remove(join_text_mesh); //remove button from interaction manager
+            interactionManager.remove(create_text_mesh); //remove button from interaction manager
+          } else if (state.number_connected == 3) {
+            player_team = "black";
+            room.send("started", "started");
+            scene.remove(start_text_mesh); //remove welcome speech
+            scene.remove(join_text_mesh); //remove join button
+            scene.remove(create_text_mesh); //remove create button
+            interactionManager.remove(join_text_mesh); //remove button from interaction manager
+            interactionManager.remove(create_text_mesh); //remove button from interaction manager
+          }
+          if (state.started == true) {
+            started = true;
+          }
+          turn = state.turn;
+          for (let piece in piece_array) {
+            piece_array[piece].position.x = state.pieces_array[piece].x;
+            piece_array[piece].position.z = state.pieces_array[piece].z;
+          }
         });
       })
       .catch((e) => {
@@ -135,10 +164,6 @@ stlloader.load("./models/join.stl", (geo) => {
   });
   scene.add(join_text_mesh);
 });
-
-let mousedown = false;
-let selected = "";
-let turn = "white";
 
 class Piece {
   constructor({
@@ -622,7 +647,15 @@ plane.addEventListener("click", (e) => {
         piece_array[piece].position.x = intersects[0].point.x;
         piece_array[piece].position.z = intersects[0].point.z;
         selected = "";
-        turn == "white" ? (turn = "black") : (turn = "white");
+        global_room.send(
+          "move",
+          JSON.stringify({
+            piece_name: piece,
+            x: piece_array[piece].position.x,
+            z: piece_array[piece].position.z,
+          })
+        );
+        global_room.send("turn_change");
       }
 
       piece_array[piece].update();
