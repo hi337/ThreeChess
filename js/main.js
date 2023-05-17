@@ -2,14 +2,19 @@ import * as THREE from "three";
 import WebGL from "three/addons/capabilities/WebGL.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
 import { InteractionManager } from "three.interactive";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+import * as Colyseus from "colyseus.js";
 
+let colyseus_client = new Colyseus.Client("ws://localhost:2567");
 let started = false; //vaiable seeing if the game started or not;
-let mode = ""; //mode will be either "create", which will mean the screen will just show a code or "join", which will allow two players to join
+let room_id = "";
 
 const stlloader = new STLLoader(); //loads stl files
 const gltfloder = new GLTFLoader(); //loads gltf files
+const fontloader = new FontLoader(); //loads fonts
 const raycaster = new THREE.Raycaster(); //raycaster used to detect where on the chess board the player clicked
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -26,7 +31,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 //variables defined as meshes to start game
-let start_text_mesh, create_text_mesh, join_text_mesh;
+let start_text_mesh, create_text_mesh, join_text_mesh, room_id_mesh;
 
 //used to detect user interaction like clicking/taping in a manner similar to dom elements
 const interactionManager = new InteractionManager(
@@ -61,6 +66,38 @@ stlloader.load("./models/create.stl", (geo) => {
     document.body.style.cursor = "default";
     create_text_mesh.material.color.setHex(0xce1126);
   });
+  create_text_mesh.addEventListener("click", (e) => {
+    colyseus_client
+      .create("chess_room")
+      .then((room) => {
+        fontloader.load(
+          "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
+          (font) => {
+            let geo = new TextGeometry(`Room Id: \n${room.id}`, {
+              size: 80,
+              height: 10,
+              font: font,
+            });
+            room_id_mesh = new THREE.Mesh(
+              geo,
+              new THREE.MeshLambertMaterial({ color: 0xce1126 })
+            );
+            room_id_mesh.scale.set(0.25, 0.25, 0.25);
+            room_id_mesh.position.set(-60, 0, 0);
+            room_id_mesh.rotateX(-Math.PI / 2);
+            scene.remove(start_text_mesh);
+            scene.remove(join_text_mesh);
+            scene.remove(create_text_mesh);
+            interactionManager.remove(join_text_mesh);
+            interactionManager.remove(create_text_mesh);
+            scene.add(room_id_mesh);
+          }
+        );
+      })
+      .catch((e) => {
+        console.log("JOIN ERROR", e);
+      });
+  });
   scene.add(create_text_mesh);
 });
 
@@ -80,6 +117,7 @@ stlloader.load("./models/join.stl", (geo) => {
     document.body.style.cursor = "default";
     join_text_mesh.material.color.setHex(0xce1126);
   });
+  join_text_mesh.addEventListener("click", (e) => {});
   scene.add(join_text_mesh);
 });
 
