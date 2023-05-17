@@ -70,6 +70,7 @@ stlloader.load("./models/create.stl", (geo) => {
     colyseus_client
       .create("chess_room")
       .then((room) => {
+        room_id = room.id;
         fontloader.load(
           "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
           (font) => {
@@ -90,12 +91,14 @@ stlloader.load("./models/create.stl", (geo) => {
             scene.remove(create_text_mesh);
             interactionManager.remove(join_text_mesh);
             interactionManager.remove(create_text_mesh);
+            started = true;
             scene.add(room_id_mesh);
           }
         );
+        alert(room_id);
       })
       .catch((e) => {
-        console.log("JOIN ERROR", e);
+        console.log("CREATE ERROR", e);
       });
   });
   scene.add(create_text_mesh);
@@ -117,7 +120,19 @@ stlloader.load("./models/join.stl", (geo) => {
     document.body.style.cursor = "default";
     join_text_mesh.material.color.setHex(0xce1126);
   });
-  join_text_mesh.addEventListener("click", (e) => {});
+  join_text_mesh.addEventListener("click", (e) => {
+    room_id = prompt("What is the Room Id?: ", "");
+    colyseus_client
+      .joinById(room_id)
+      .then((room) => {
+        room.onStateChange((state) => {
+          console.log(state.number_connected);
+        });
+      })
+      .catch((e) => {
+        console.log("CREATE ERROR", e);
+      });
+  });
   scene.add(join_text_mesh);
 });
 
