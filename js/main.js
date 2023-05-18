@@ -628,10 +628,6 @@ const plane = new Box({
   ],
 });
 
-//axes helper (development only)
-const axes = new THREE.AxesHelper(90);
-scene.add(axes);
-
 plane.position.set(0, 0, 0);
 plane.receiveShadow = true;
 
