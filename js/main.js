@@ -8,7 +8,7 @@ import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import * as Colyseus from "colyseus.js";
 
-let colyseus_client = new Colyseus.Client("ws://localhost:2567");
+let colyseus_client = new Colyseus.Client("ws://172.31.8.86:3000");
 let started = false; //vaiable seeing if the game started or not;
 let room_id = "";
 let player_team = "";
