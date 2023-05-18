@@ -8,7 +8,7 @@ import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import * as Colyseus from "colyseus.js";
 
-let colyseus_client = new Colyseus.Client("ws://172.31.8.86:3000");
+let colyseus_client = new Colyseus.Client("ws://192.168.1.76:3000");
 let started = false; //vaiable seeing if the game started or not;
 let room_id = "";
 let player_team = "";
@@ -80,7 +80,7 @@ stlloader.load("./models/create.stl", (geo) => {
           "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
           (font) => {
             let geo = new TextGeometry(`Room Id: \n${room.id}`, {
-              size: 80,
+              size: 70,
               height: 10,
               font: font,
             });
@@ -98,7 +98,11 @@ stlloader.load("./models/create.stl", (geo) => {
             interactionManager.remove(create_text_mesh);
             started = true;
             scene.add(room_id_mesh);
-            navigator.clipboard.writeText(room_id);
+            try {
+              copyToClipboard(room_id);
+            } catch (e) {
+              console.error(e);
+            }
           }
         );
       })
@@ -144,7 +148,7 @@ stlloader.load("./models/join.stl", (geo) => {
                 piece_array[state.recentMove].position.z =
                   state.pieces_array[i].z;
                 piece_array[state.recentMove].update();
-                collisionCheck();
+                collisionCheck(state.recentMove);
               }
             }
           }
@@ -717,30 +721,47 @@ function resizeRendererToDisplaySize(renderer) {
   return needResize;
 }
 
-function collisionCheck() {
-  for (let piece in piece_array) {
-    let firstBB = new THREE.Box3().setFromObject(
-      piece_array[piece].model.scene
-    );
-    for (let piece_index in piece_array) {
-      if (piece_array[piece_index].team != piece_array[piece].team) {
-        let secondBB = new THREE.Box3().setFromObject(
-          piece_array[piece_index].model.scene
-        );
-        if (firstBB.intersectsBox(secondBB)) {
-          if (turn == "black") {
-            scene.remove(piece_array[piece_index].model.scene);
-            interactionManager.remove(piece_array[piece_index].model.scene);
-            delete piece_array[piece_index];
-            global_room.send("collide", piece_index);
-          } else {
-            scene.remove(piece_array[piece].model.scene);
-            interactionManager.remove(piece_array[piece].model.scene);
-            delete piece_array[piece];
-            global_room.send("collide", piece);
-          }
-        }
+function collisionCheck(piece_that_moved) {
+  let firstBB = new THREE.Box3().setFromObject(
+    piece_array[piece_that_moved].model.scene
+  );
+  for (let piece_index in piece_array) {
+    if (piece_array[piece_index].team != piece_array[piece_that_moved].team) {
+      let secondBB = new THREE.Box3().setFromObject(
+        piece_array[piece_index].model.scene
+      );
+      if (firstBB.intersectsBox(secondBB)) {
+        scene.remove(piece_array[piece_index].model.scene);
+        interactionManager.remove(piece_array[piece_index].model.scene);
+        delete piece_array[piece_index];
+        global_room.send("collide", piece_index);
       }
+    }
+  }
+}
+
+async function copyToClipboard(textToCopy) {
+  // Navigator clipboard api needs a secure context (https)
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(textToCopy);
+  } else {
+    // Use the 'out of viewport hidden text area' trick
+    const textArea = document.createElement("textarea");
+    textArea.value = textToCopy;
+
+    // Move textarea out of the viewport so it's not visible
+    textArea.style.position = "absolute";
+    textArea.style.left = "-999999px";
+
+    document.body.prepend(textArea);
+    textArea.select();
+
+    try {
+      document.execCommand("copy");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      textArea.remove();
     }
   }
 }
