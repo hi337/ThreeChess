@@ -27,4 +27,4 @@ git clone https://github.com/hi337/ThreeChess
 cd ThreeChess
 ```
 
-Next, go the the ____ file
+Next, go the the "js/main.js" file and change the 
