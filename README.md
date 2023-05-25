@@ -3,6 +3,7 @@
 This is a Chess Game implemented with ThreeJS. It doesn't restrict player movement and features like castling and pawn promotion are not implemented.
 
 ## Dependencies
+
 1. NodeJS
 2. Git
 
@@ -28,6 +29,6 @@ cd ThreeChess
 npx vite --host 0.0.0.0
 ```
 
-The command line should output to you the network link, which you can use to access the site with all computers on the LAN. For the sever to work, go the the "js/main.js" file and change the ip address on the 11th line to the address listed as the address link without changing the port. 
+The command line should output to you the network link, which you can use to access the site with all computers on the LAN. For the sever to work, go the the "js/main.js" file and change the ip address on the 11th line to your IPv4 Address from ipconfig.
 
 Then your done. Enjoy!
