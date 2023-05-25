@@ -25,6 +25,9 @@ Then clone this repository in the parent folder:
 cd ..
 git clone https://github.com/hi337/ThreeChess
 cd ThreeChess
+npx vite --host 0.0.0.0
 ```
 
-Next, go the the "js/main.js" file and change the 
+The command line should output to you the network link, which you can use to access the site with all computers on the LAN. For the sever to work, go the the "js/main.js" file and change the ip address on the 11th line to the address listed as the address link without changing the port. 
+
+Then your done. Enjoy!
