@@ -7,28 +7,8 @@ import { InteractionManager } from "three.interactive";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import * as Colyseus from "colyseus.js";
-import os from "os";
 
-function findIPv4() {
-  let networkInterfaces = os.networkInterfaces();
-  let ipv4 = "";
-  let chosen = "";
-  if ("Wi-fi" in networkInterfaces) {
-    chosen = "Wi-Fi";
-  } else if ("eth0" in networkInterfaces) {
-    chosen = "eth0";
-  } else if ("en0" in networkInterfaces) {
-    chosen = "en0";
-  }
-  for (let obb in networkInterfaces[chosen]) {
-    if (obb.family == "IPv4") {
-      ipv4 = obb.address;
-    }
-  }
-  return ipv4;
-}
-
-let colyseus_client = new Colyseus.Client(`ws://${findIPv4()}:3000`);
+let colyseus_client = new Colyseus.Client("ws://192.168.1.76:3000");
 let started = false; //vaiable seeing if the game started or not;
 let room_id = "";
 let player_team = "";
