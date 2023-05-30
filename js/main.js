@@ -208,7 +208,7 @@ class Piece {
               node.material = new THREE.MeshLambertMaterial({ color: team });
             } else {
               node.material = new THREE.MeshLambertMaterial({
-                color: 0x1d1f1e,
+                color: 0x5a5a5a,
               });
             }
           }
